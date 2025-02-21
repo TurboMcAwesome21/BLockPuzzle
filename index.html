@@ -1,0 +1,62 @@
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import "./styles.css";
+
+const GRID_SIZE = 10;
+const BLOCKS = [
+  [[1, 1, 1], [0, 1, 0]],
+  [[1, 1], [1, 1]],
+  [[1, 1, 1]],
+  [[1], [1], [1]],
+  [[1, 1, 1, 1]],
+];
+
+const BlockPuzzle = () => {
+  const [grid, setGrid] = useState(Array(GRID_SIZE).fill(Array(GRID_SIZE).fill(0)));
+  const [selectedBlock, setSelectedBlock] = useState(null);
+
+  const handleDrop = (x, y) => {
+    if (!selectedBlock) return;
+    let newGrid = [...grid.map(row => [...row])];
+    const block = BLOCKS[selectedBlock];
+    
+    for (let i = 0; i < block.length; i++) {
+      for (let j = 0; j < block[i].length; j++) {
+        if (block[i][j] === 1 && x + i < GRID_SIZE && y + j < GRID_SIZE) {
+          newGrid[x + i][y + j] = 1;
+        }
+      }
+    }
+    setGrid(newGrid);
+    setSelectedBlock(null);
+  };
+
+  return (
+    <div className="game-container">
+      <div className="grid">
+        {grid.map((row, i) => (
+          <div key={i} className="row">
+            {row.map((cell, j) => (
+              <div key={j} className={`cell ${cell ? "filled" : "empty"}`} onClick={() => handleDrop(i, j)}></div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="blocks">
+        {BLOCKS.map((block, index) => (
+          <motion.div key={index} className="block" onClick={() => setSelectedBlock(index)}>
+            {block.map((row, i) => (
+              <div key={i} className="block-row">
+                {row.map((cell, j) => (
+                  <div key={j} className={`block-cell ${cell ? "filled" : "empty"}`}></div>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default BlockPuzzle;
